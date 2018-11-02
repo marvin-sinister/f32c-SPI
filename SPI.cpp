@@ -42,10 +42,11 @@ void SPIClass::begin(int8_t ss)
     _ss = ss;
 }
 
-uint8_t SPIClass::setSpeed(uint8_t _speed)
+uint8_t SPIClass::setClock(uint8_t _clock)
 {
+    uint8_t clock = (uint8_t)((_clock/100000000.0f)*256);
     uint32_t in;
-    ((uint8_t *)_spi)[1] = _speed;
+    ((uint8_t *)_spi)[1] = clock;
     do {
         in = *_spi;
     } while ((in & SPI_READY_MASK) == 0);
@@ -86,6 +87,7 @@ void SPIClass::unset_pin(uint8_t pin)
 }
 
 void SPIClass::beginTransaction(SPISettings settings) {
+    setClock(settings._clock);
     beginTransaction();
 }
 

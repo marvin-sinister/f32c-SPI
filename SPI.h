@@ -53,7 +53,7 @@ public:
     SPIClass(uint8_t spi_bus=ESPI);
     void begin(int8_t ss=-1);
 
-    uint8_t setSpeed(uint8_t _speed);
+    uint8_t setClock(uint8_t _clock);
 
     uint8_t transfer(uint8_t _data);
     void beginTransaction();
