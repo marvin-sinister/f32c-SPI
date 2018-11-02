@@ -9,17 +9,28 @@ static const uint8_t RF_OPMODE_MASK = 0xF8;
 static const uint8_t RF_OPMODE_SLEEP = 0x00;
 static const uint8_t RF_OPMODE_STANDBY = 0x00;
 
+volatile uint32_t *simpleio  = (uint32_t *)0xFFFFFF10;
+
 SPIClass SPI(0);
+
+void set_pin(uint8_t pin)
+{
+    *simpleio |= (1<<pin);
+}
+
+void unset_pin(uint8_t pin)
+{
+    *simpleio &= ~(1<<pin);
+}
+
 
 byte readRegister(byte address)
 {
     byte value = 0x00;
-    delay(1);
-    bitClear(address, 7);    // Bit 7 cleared to write in registers
-    //SPI.beginTransaction();
+    unset_pin(11);
     SPI.transfer(address);
     value = SPI.transfer(0x00);
-     //   Serial.print(F("## Reading:  ##\t"));
+    set_pin(11);
     Serial.print(F("ULX3S FPGA Reading SX1276 register 0x"));
     Serial.print(address, HEX);
     Serial.print(F(": 0x"));
