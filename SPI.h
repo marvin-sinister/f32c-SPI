@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#define NOP __asm__ __volatile__ ("nop\n\t")
+
 #if (_BYTE_ORDER == _LITTLE_ENDIAN)
 #define  SPI_READY_MASK (1 << 8)
 #else
