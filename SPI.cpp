@@ -6,11 +6,6 @@ SPIClass::SPIClass(uint8_t spi_bus)
     ,_spi(NULL)
     ,_inTransaction(false)
     ,_ss(-1)
-    ,_simpleio((uint32_t *)0xFFFFFF10)
-    ,_flash_spi((uint16_t *)0xFFFFFB40)
-    ,_sd_spi((uint16_t *)0xFFFFFB50)
-    ,_oled_spi((uint16_t *)0xFFFFFB60)
-    ,_ext_spi((uint16_t *)0xFFFFFB70)
 {}
 
 void SPIClass::begin(int8_t ss)
@@ -19,30 +14,17 @@ void SPIClass::begin(int8_t ss)
         return;
     }
 
-    switch(_spi_num) {
-        case FSPI:
-            _spi = _flash_spi;
-            break;
-        case SDSPI:
-            _spi = _sd_spi;
-            break;
-        case LEDSPI:
-            _spi = _oled_spi;
-            break;
-        default:
-            _spi = _ext_spi;
-            break;
-    }
+    _spi = (uint16_t *)(0xFFFFFB40 + (_spi_num * 0x10));
+
     if(!_spi) {
         return;
     }
 
-    ((uint8_t *)_spi)[1] = 0x19;
-
+    setClock(1200000);
     _ss = ss;
 }
 
-uint8_t SPIClass::setClock(uint8_t _clock)
+uint8_t SPIClass::setClock(uint32_t _clock)
 {
     uint8_t clock = (uint8_t)((_clock/100000000.0f)*256);
     uint32_t in;
@@ -77,13 +59,13 @@ uint8_t SPIClass::transfer(uint8_t _data)
 
 void SPIClass::set_pin(uint8_t pin)
 {
-    *_simpleio |= (1<<pin);
+    *((uint32_t *)0xFFFFFF10) |= (1<<pin);
 }
 
 
 void SPIClass::unset_pin(uint8_t pin)
 {
-    *_simpleio &= ~(1<<pin);
+    *((uint32_t *)0xFFFFFF10) &= ~(1<<pin);
 }
 
 void SPIClass::beginTransaction(SPISettings settings) {

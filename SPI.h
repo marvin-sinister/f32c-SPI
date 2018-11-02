@@ -19,10 +19,10 @@
 #define SPI_MODE2 0x08
 #define SPI_MODE3 0x0C
 
-#define ESPI 0
-#define FSPI 1
-#define SDSPI 2
-#define LEDSPI 3
+#define ESPI 3
+#define FSPI 0
+#define SDSPI 1
+#define LEDSPI 2
 
 class SPISettings
 {
@@ -41,11 +41,6 @@ private:
     uint16_t * _spi;
     bool _inTransaction;
     int8_t _ss;
-    uint32_t * _simpleio;
-    uint16_t * _flash_spi;
-    uint16_t * _sd_spi;
-    uint16_t * _oled_spi;
-    uint16_t * _ext_spi;
     void set_pin(uint8_t pin);
     void unset_pin(uint8_t pin);
 
@@ -53,7 +48,7 @@ public:
     SPIClass(uint8_t spi_bus=ESPI);
     void begin(int8_t ss=-1);
 
-    uint8_t setClock(uint8_t _clock);
+    uint8_t setClock(uint32_t _clock);
 
     uint8_t transfer(uint8_t _data);
     void beginTransaction();
