@@ -63,7 +63,7 @@ uint8_t SPIClass::transfer(uint8_t _data)
     ((uint8_t *)_spi)[0] = _data;
     do {
         in = *_spi;
-        __asm__("nop\n\t");
+        NOP;
     } while ((in & SPI_READY_MASK) == 0);
 
     #if (_BYTE_ORDER == _LITTLE_ENDIAN)
