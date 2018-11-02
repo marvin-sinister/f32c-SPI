@@ -16,11 +16,22 @@
 #define SDSPI 2
 #define LEDSPI 3
 
+class SPISettings
+{
+public:
+    SPISettings() :_clock(1000000), _bitOrder(SPI_MSBFIRST), _dataMode(SPI_MODE0) {}
+    SPISettings(uint32_t clock, uint8_t bitOrder, uint8_t dataMode) :_clock(clock), _bitOrder(bitOrder), _dataMode(dataMode) {}
+    uint32_t _clock;
+    uint8_t  _bitOrder;
+    uint8_t  _dataMode;
+};
+
 class SPIClass
 {
 private:
     int8_t _spi_num;
     uint16_t * _spi;
+    bool _inTransaction;
     int8_t _ss;
     uint32_t * _simpleio;
     uint16_t * _flash_spi;
@@ -37,6 +48,9 @@ public:
     uint8_t setSpeed(uint8_t _speed);
 
     uint8_t transfer(uint8_t _data);
+    void beginTransaction();
+    void beginTransaction(SPISettings settings);
+    void endTransaction();
 };
 
 extern SPIClass SPI;

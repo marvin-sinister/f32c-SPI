@@ -4,6 +4,7 @@
 SPIClass::SPIClass(uint8_t spi_bus)
     :_spi_num(spi_bus)
     ,_spi(NULL)
+    ,_inTransaction(false)
     ,_ss(-1)
     ,_simpleio((uint32_t *)0xFFFFFF10)
     ,_flash_spi((uint16_t *)0xFFFFFB40)
@@ -83,3 +84,24 @@ void SPIClass::unset_pin(uint8_t pin)
 {
     *_simpleio &= ~(1<<pin);
 }
+
+void SPIClass::beginTransaction(SPISettings settings) {
+    beginTransaction();
+}
+
+void SPIClass::beginTransaction() {
+    if (_inTransaction) {
+        return;
+    }
+    _unset_pin(_ss);
+    _inTransaction = true;
+}
+
+void SPIClass::endTransaction() {
+    if (!_inTransaction) {
+        return;
+    }
+    _set_pin(_ss);
+    _inTransaction = false;
+}
+
