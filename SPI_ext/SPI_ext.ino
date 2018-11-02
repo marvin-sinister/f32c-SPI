@@ -16,9 +16,10 @@ byte readRegister(byte address)
     byte value = 0x00;
     delay(1);
     bitClear(address, 7);    // Bit 7 cleared to write in registers
+    //SPI.beginTransaction();
     SPI.transfer(address);
     value = SPI.transfer(0x00);
-    dc(1); // commands
+     //   Serial.print(F("## Reading:  ##\t"));
     Serial.print(F("ULX3S FPGA Reading SX1276 register 0x"));
     Serial.print(address, HEX);
     Serial.print(F(": 0x"));
