@@ -14,14 +14,12 @@ void setup(void)
   delay(1000);
 }
 
-uint8_t flash_id(void)
+void flash_id(void)
 {
-  SPI1.beginTransaction();
-  SPI1.transfer(0xAB);
-  SPI1.transfer(0x00);
-  SPI1.transfer(0x00);
-  SPI1.transfer(0x00);
-  return SPI1.transfer(0x00);
+  SPI1.transfer(0x9F);
+  leading_zero_hex(SPI1.transfer(0x00));
+  leading_zero_hex(SPI1.transfer(0x00));
+  leading_zero_hex(SPI1.transfer(0x00));
 }
 
 void loop(void)
@@ -29,7 +27,15 @@ void loop(void)
   Serial.println("##############################");
   delay(500);
   Serial.print("FLASH ID: 0x");
-  Serial.println(flash_id(), HEX);
+  flash_id();
+  Serial.println('\0');
   Serial.println("##############################");
   delay(5000);
+}
+
+void leading_zero_hex(uint8_t _value) {
+  if (_value < 0x10) {
+    Serial.print("0");
+  }
+  Serial.print(_value, HEX);
 }

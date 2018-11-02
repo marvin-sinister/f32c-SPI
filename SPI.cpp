@@ -41,10 +41,10 @@ void SPIClass::begin(int8_t ss)
     _ss = ss;
 }
 
-uint8_t SPIClass::beginTransaction()
+uint8_t SPIClass::setSpeed(uint8_t _speed)
 {
     uint32_t in;
-    ((uint8_t *)_spi)[1] = 0x80;
+    ((uint8_t *)_spi)[1] = _speed;
     do {
         in = *_spi;
     } while ((in & SPI_READY_MASK) == 0);

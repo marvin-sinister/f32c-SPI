@@ -2,7 +2,6 @@
 #define _SPI_H
 
 #include <stdlib.h>
-#include "pins_arduino.h"
 
 #if (_BYTE_ORDER == _LITTLE_ENDIAN)
 #define  SPI_READY_MASK (1 << 8)
@@ -33,9 +32,9 @@ public:
     SPIClass(uint8_t spi_bus=ESPI);
     void begin(int8_t ss=-1);
 
-    uint8_t beginTransaction(void);
+    uint8_t setSpeed(uint8_t _speed);
 
-    uint8_t transfer(uint8_t data);
+    uint8_t transfer(uint8_t _data);
 };
 
 extern SPIClass SPI;
