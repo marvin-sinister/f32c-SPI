@@ -3,7 +3,7 @@
 #define LED_RED 8
 #define LED_GREEN 10
 
-SPIClass SPI1(1);
+SPIClass SPI1(FSPI);
 
 void setup(void)
 {
@@ -16,10 +16,12 @@ void setup(void)
 
 void flash_id(void)
 {
+  SPI1.beginTransaction();
   SPI1.transfer(0x9F);
   leading_zero_hex(SPI1.transfer(0x00));
   leading_zero_hex(SPI1.transfer(0x00));
   leading_zero_hex(SPI1.transfer(0x00));
+  SPI1.endTransaction();
 }
 
 void loop(void)
