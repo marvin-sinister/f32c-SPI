@@ -31,6 +31,7 @@ uint8_t SPIClass::setClock(uint32_t _clock)
     ((uint8_t *)_spi)[1] = clock;
     do {
         in = *_spi;
+    NOP;
     } while ((in & SPI_READY_MASK) == 0);
 
     #if (_BYTE_ORDER == _LITTLE_ENDIAN)
