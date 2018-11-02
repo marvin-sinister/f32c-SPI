@@ -44,7 +44,7 @@ void SPIClass::begin(int8_t ss)
 uint8_t SPIClass::beginTransaction()
 {
     uint32_t in;
-    ((uint8_t *)_spi)[1] = 0x80;
+    ((uint8_t *)_spi)[1] = 0x19;
     do {
         in = *_spi;
     } while ((in & SPI_READY_MASK) == 0);
