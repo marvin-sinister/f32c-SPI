@@ -1,3 +1,5 @@
+// #include <SPI.h>
+
 static const uint8_t SX1276_REG_VERSION = 0x42;
 static const uint8_t SX1276_REG_TEMP = 0x3C;
 static const uint8_t SX1276_REG_LOW_BAT = 0x3D;
@@ -6,6 +8,11 @@ static const uint8_t SX1276_REG_OSC = 0x24;
 static const uint8_t RF_OPMODE_MASK = 0xF8;
 static const uint8_t RF_OPMODE_SLEEP = 0x00;
 static const uint8_t RF_OPMODE_STANDBY = 0x00;
+
+
+#define LED_RED 8
+#define LED_GREEN 10
+
 
 #if (_BYTE_ORDER == _LITTLE_ENDIAN)
 #define	SPI_READY_MASK (1 << 8)
@@ -18,6 +25,8 @@ volatile uint16_t *flash_spi = (uint16_t *)0xFFFFFB40;
 volatile uint16_t *sd_spi    = (uint16_t *)0xFFFFFB50;
 volatile uint16_t *oled_spi  = (uint16_t *)0xFFFFFB60;
 volatile uint16_t *ext_spi   = (uint16_t *)0xFFFFFB70;
+
+
 
 uint8_t spi_start_tx(volatile uint16_t *port)
 {
@@ -33,6 +42,7 @@ uint8_t spi_start_tx(volatile uint16_t *port)
   return (in >> 24);
 #endif
 }
+
 
 uint8_t spi_rxtx(volatile uint16_t *port, uint8_t _data)
 {
@@ -50,6 +60,7 @@ uint8_t spi_rxtx(volatile uint16_t *port, uint8_t _data)
 #endif
 }
 
+
 void dc(uint8_t state)
 {
   if(state)
@@ -57,6 +68,7 @@ void dc(uint8_t state)
   else
     *simpleio &= ~(1<<11);
 }
+
 
 void resn(uint8_t state)
 {
@@ -85,8 +97,8 @@ void setup(void)
   reset_sequence();
 }
 
-byte writeRegister(byte address, byte value)
-{
+byte writeRegister(byte address, byte value){
+    // byte value = 0x00;
     dc(0); // commands
     delay(1);
     bitClear(address, 7);    // Bit 7 cleared to write in registers
@@ -95,6 +107,7 @@ byte writeRegister(byte address, byte value)
     // write the value
     spi_rxtx(ext_spi, value);
     dc(1); // commands
+     //   Serial.print(F("## Reading:  ##\t"));
     Serial.print(F("ULX3S FPGA writing SX1276 register 0x"));
     Serial.print(address, HEX);
     Serial.print(F(": 0x"));
@@ -120,13 +133,28 @@ byte readRegister(byte address)
     return value;
 }
 
+uint8_t flash_id(void)
+{
+  spi_start_tx(flash_spi);
+  spi_rxtx(flash_spi, 0xAB);
+  spi_rxtx(flash_spi, 0);
+  spi_rxtx(flash_spi, 0);
+  spi_rxtx(flash_spi, 0);
+  return spi_rxtx(flash_spi, 0);
+}
+
 void loop(void)
 {
   Serial.println("##############################");
-  readRegister(SX1276_REG_VERSION);
-  readRegister(SX1276_REG_LOW_BAT);
-  readRegister(SX1276_REG_TEMP);
-  writeRegister(SX1276_REG_OP_MODE, (readRegister(SX1276_REG_OP_MODE) & RF_OPMODE_MASK) | RF_OPMODE_STANDBY);
+  delay(500);
+  Serial.print("FLASH ID: 0x");
+  Serial.println(flash_id(), HEX);
+  #ifdef LORA
+  	readRegister(SX1276_REG_VERSION);
+  	readRegister(SX1276_REG_LOW_BAT);
+  	readRegister(SX1276_REG_TEMP);
+  	writeRegister(SX1276_REG_OP_MODE, (readRegister(SX1276_REG_OP_MODE) & RF_OPMODE_MASK) | RF_OPMODE_STANDBY);
+  #endif
   Serial.println("##############################");
   delay(5000);
 }
