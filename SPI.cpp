@@ -20,7 +20,7 @@ void SPIClass::begin(int8_t ss)
         return;
     }
 
-    setClock(1200000);
+    setClock(5000000);
     _ss = ss;
 }
 
@@ -79,6 +79,7 @@ void SPIClass::beginTransaction() {
     }
     unset_pin(_ss);
     _inTransaction = true;
+    NOP;
 }
 
 void SPIClass::endTransaction() {
