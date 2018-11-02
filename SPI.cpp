@@ -14,8 +14,6 @@ SPIClass::SPIClass(uint8_t spi_bus)
 
 void SPIClass::begin(int8_t ss)
 {
-    Serial.println("Initializing...");
-
     if(_spi) {
         return;
     }
@@ -41,30 +39,15 @@ void SPIClass::begin(int8_t ss)
     ((uint8_t *)_spi)[1] = 0x19;
 
     _ss = ss;
-
-    set_pin(11);
-    set_pin(10);
-    delay(20);
-    unset_pin(10);
-    delay(20);
-    set_pin(10);
-    delay(100);
-    
-    Serial.print("Initialized: ");
-    Serial.println((unsigned int)_flash_spi, HEX);
 }
 
-uint8_t SPIClass::beginTransaction(void)
+uint8_t SPIClass::beginTransaction()
 {
-    Serial.println("Starting transaction");
-
     uint32_t in;
     ((uint8_t *)_spi)[1] = 0x80;
     do {
         in = *_spi;
     } while ((in & SPI_READY_MASK) == 0);
-
-    Serial.println("Started transaction");
 
     #if (_BYTE_ORDER == _LITTLE_ENDIAN)
         return (in & 0xff);
@@ -73,18 +56,15 @@ uint8_t SPIClass::beginTransaction(void)
     #endif
 }
 
-uint8_t SPIClass::transfer(uint8_t data)
+uint8_t SPIClass::transfer(uint8_t _data)
 {
-    Serial.println("Starting transfer");
-
     uint32_t in;
 
-    *(uint8_t *)_spi = data;
+    ((uint8_t *)_spi)[0] = _data;
     do {
         in = *_spi;
+        delay(1);
     } while ((in & SPI_READY_MASK) == 0);
-
-    Serial.println("Transfer done");
 
     #if (_BYTE_ORDER == _LITTLE_ENDIAN)
         return (in & 0xff);
