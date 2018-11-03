@@ -4,8 +4,9 @@
 SPIClass::SPIClass(uint8_t spi_bus)
     :_spi_num(spi_bus)
     ,_spi(NULL)
-    ,_inTransaction(false)
     ,_ss(-1)
+    ,_freq(5000000)
+    ,_inTransaction(false)
 {}
 
 void SPIClass::begin(int8_t ss)
@@ -20,25 +21,28 @@ void SPIClass::begin(int8_t ss)
         return;
     }
 
-    setClock(5000000);
+    ((uint8_t *)_spi)[1] = 0x19;
     _ss = ss;
 }
 
-uint8_t SPIClass::setClock(uint32_t _clock)
-{
-    uint8_t clock = (uint8_t)((_clock/100000000.0f)*256);
-    uint32_t in;
-    ((uint8_t *)_spi)[1] = clock;
-    do {
-        in = *_spi;
-    NOP;
-    } while ((in & SPI_READY_MASK) == 0);
+void SPIClass::end() {
+}
 
-    #if (_BYTE_ORDER == _LITTLE_ENDIAN)
-        return (in & 0xff);
-    #else
-        return (in >> 24);
-    #endif
+void SPIClass::setClock(uint32_t clock)
+{
+    if (clock == _freq) {
+        return;
+    }
+    _freq = clock;
+    uint8_t flag = (uint8_t)((clock/100000000.0f)*256);
+    ((uint8_t *)_spi)[1] = flag;
+    NOP;
+}
+
+void SPIClass::setBitOrder(uint8_t bitOrder) {
+}
+
+void SPIClass::setDataMode(uint8_t dataMode) {
 }
 
 uint8_t SPIClass::transfer(uint8_t _data)

@@ -19,15 +19,15 @@
 #define SPI_MODE2 0x08
 #define SPI_MODE3 0x0C
 
-#define ESPI 3
 #define FSPI 0
 #define SDSPI 1
 #define LEDSPI 2
+#define ESPI 3
 
 class SPISettings
 {
 public:
-    SPISettings() :_clock(1000000), _bitOrder(SPI_MSBFIRST), _dataMode(SPI_MODE0) {}
+    SPISettings() :_clock(5000000), _bitOrder(SPI_MSBFIRST), _dataMode(SPI_MODE0) {}
     SPISettings(uint32_t clock, uint8_t bitOrder, uint8_t dataMode) :_clock(clock), _bitOrder(bitOrder), _dataMode(dataMode) {}
     uint32_t _clock;
     uint8_t  _bitOrder;
@@ -39,16 +39,20 @@ class SPIClass
 private:
     int8_t _spi_num;
     uint16_t * _spi;
-    bool _inTransaction;
     int8_t _ss;
+    uint32_t _freq;
+    bool _inTransaction;
     void set_pin(uint8_t pin);
     void unset_pin(uint8_t pin);
 
 public:
     SPIClass(uint8_t spi_bus=ESPI);
     void begin(int8_t ss=-1);
+    void end();
 
-    uint8_t setClock(uint32_t _clock);
+    void setClock(uint32_t clock);
+    void setBitOrder(uint8_t bitOrder);
+    void setDataMode(uint8_t dataMode);
 
     uint8_t transfer(uint8_t _data);
     void beginTransaction();
