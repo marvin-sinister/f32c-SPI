@@ -15,6 +15,8 @@ void SPIClass::begin(int8_t ss)
         return;
     }
 
+    _ss = ss;
+
     _spi = (uint16_t *)(0xFFFFFB40 + (_spi_num * 0x10));
 
     if(!_spi) {
@@ -22,7 +24,6 @@ void SPIClass::begin(int8_t ss)
     }
 
     ((uint8_t *)_spi)[1] = 0x19;
-    _ss = ss;
 }
 
 void SPIClass::end() {
@@ -64,13 +65,23 @@ uint8_t SPIClass::transfer(uint8_t _data)
 
 void SPIClass::set_pin(uint8_t pin)
 {
-    *((uint32_t *)0xFFFFFF10) |= (1<<pin);
+    if (_spi_num != ESPI) {
+        *((uint32_t *)0xFFFFFF10) |= (1<<pin);
+    }
+    else {
+        digitalWrite(pin, LOW);
+    }
 }
 
 
 void SPIClass::unset_pin(uint8_t pin)
 {
-    *((uint32_t *)0xFFFFFF10) &= ~(1<<pin);
+    if (_spi_num != ESPI) {
+        *((uint32_t *)0xFFFFFF10) &= ~(1<<pin);
+    }
+    else {
+        digitalWrite(pin, HIGH);
+    }
 }
 
 void SPIClass::beginTransaction(SPISettings settings) {
